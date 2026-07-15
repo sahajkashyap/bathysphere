@@ -1,0 +1,744 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bathysphere - Reading Comprehension Questions</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 40px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 32px;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 16px;
+            opacity: 0.9;
+        }
+        
+        .content {
+            padding: 40px;
+        }
+        
+        .book-selector {
+            margin-bottom: 30px;
+        }
+        
+        .book-info label {
+            display: block;
+            font-weight: 600;
+            margin-bottom: 12px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        select {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 16px;
+            margin-bottom: 20px;
+            font-family: inherit;
+            cursor: pointer;
+        }
+        
+        select:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+        
+        select:disabled {
+            background-color: #f5f5f5;
+            color: #999;
+            cursor: not-allowed;
+        }
+        
+        .book-meta {
+            background: #f5f5f5;
+            padding: 15px;
+            border-radius: 6px;
+            margin-bottom: 20px;
+        }
+        
+        .meta-item {
+            margin: 8px 0;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .meta-label {
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .settings {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .form-group {
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .form-group label {
+            font-weight: 600;
+            margin-bottom: 8px;
+            color: #333;
+            font-size: 14px;
+        }
+        
+        .form-group select {
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            font-size: 14px;
+            margin-bottom: 0;
+        }
+        
+        button {
+            width: 100%;
+            background: #667eea;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 6px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        button:hover {
+            background: #764ba2;
+        }
+        
+        button:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+        }
+        
+        .divider {
+            height: 1px;
+            background: #e0e0e0;
+            margin: 40px 0;
+        }
+        
+        .results {
+            display: none;
+        }
+        
+        .results.show {
+            display: block;
+        }
+        
+        .results h2 {
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+        
+        .question-type-section {
+            margin-bottom: 40px;
+        }
+        
+        .question-type-header {
+            background: #667eea;
+            color: white;
+            padding: 12px 16px;
+            border-radius: 6px;
+            font-size: 18px;
+            font-weight: 700;
+            margin-bottom: 20px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+        
+        .question-card {
+            background: #f9f9f9;
+            border-left: 5px solid #667eea;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-radius: 6px;
+        }
+        
+        .question-number {
+            font-weight: 700;
+            color: #667eea;
+            margin-bottom: 6px;
+            font-size: 13px;
+        }
+        
+        .standard-label {
+            font-size: 11px;
+            color: #999;
+            margin-bottom: 10px;
+            font-weight: 500;
+        }
+        
+        .question-text {
+            color: #333;
+            margin-bottom: 15px;
+            line-height: 1.6;
+            font-size: 16px;
+            font-weight: 500;
+        }
+        
+        .answer-key {
+            background: #e3f2fd;
+            border-left: 4px solid #2196F3;
+            padding: 12px;
+            border-radius: 4px;
+            margin-bottom: 12px;
+        }
+        
+        .answer-key-label {
+            font-weight: 700;
+            color: #1976D2;
+            display: block;
+            margin-bottom: 6px;
+            font-size: 11px;
+        }
+        
+        .answer-key-text {
+            color: #1565C0;
+            font-size: 14px;
+            line-height: 1.5;
+            font-style: italic;
+        }
+        
+        .follow-up-section {
+            background: #f0f7ff;
+            padding: 12px;
+            border-radius: 4px;
+            margin-top: 12px;
+            border-left: 3px solid #64B5F6;
+        }
+        
+        .follow-up-label {
+            font-weight: 600;
+            color: #1565C0;
+            font-size: 12px;
+            margin-bottom: 8px;
+            text-transform: uppercase;
+        }
+        
+        .follow-up-item {
+            color: #1565C0;
+            font-size: 13px;
+            margin-bottom: 6px;
+            line-height: 1.5;
+        }
+        
+        .follow-up-item:last-child {
+            margin-bottom: 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Bathysphere</h1>
+            <p>Select a book, view its grade level, and generate comprehension questions aligned to California ELA standards</p>
+        </div>
+        
+        <div class="content">
+            <div class="book-selector">
+                <div class="book-info">
+                    <label for="bookSelect">Choose a Book:</label>
+                    <select id="bookSelect" onchange="updateBookInfo()">
+                        <option value="">-- Select a Book --</option>
+                        
+                        <optgroup label="Early Elementary (K-2)">
+                            <option value="aesop">Aesop's Fables</option>
+                            <option value="fairy">Fairy Tales by Hans Christian Andersen</option>
+                        </optgroup>
+                        
+                        <optgroup label="Upper Elementary (3-5)">
+                            <option value="charlotte">Charlotte's Web</option>
+                            <option value="alice">Alice's Adventures in Wonderland</option>
+                            <option value="jungle">The Jungle Book</option>
+                        </optgroup>
+                        
+                        <optgroup label="Middle School (5-6)">
+                            <option value="island">Island of the Blue Dolphins</option>
+                        </optgroup>
+                        
+                        <optgroup label="Middle School (6-8)">
+                            <option value="littlewomen">Little Women</option>
+                            <option value="treasure">Treasure Island</option>
+                            <option value="sherlock">Adventures of Sherlock Holmes</option>
+                        </optgroup>
+                        
+                        <optgroup label="High School (9-12)">
+                            <option value="moby">Moby Dick</option>
+                            <option value="dracula">Dracula</option>
+                            <option value="jane">Jane Eyre</option>
+                        </optgroup>
+                    </select>
+                    
+                    <div class="book-meta">
+                        <div class="meta-item"><span class="meta-label">Title:</span> <span id="bookTitle">Select a book</span></div>
+                        <div class="meta-item"><span class="meta-label">Grade Level:</span> <span id="bookGrade">-</span></div>
+                        <div class="meta-item"><span class="meta-label">Author:</span> <span id="bookAuthor">-</span></div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="divider"></div>
+            
+            <div class="settings">
+                <div class="form-group">
+                    <label for="gradeLevel">Grade Level:</label>
+                    <select id="gradeLevel">
+                        <option value="">Select a book first</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="numQuestions">Number of Questions:</label>
+                    <select id="numQuestions">
+                        <option value="5">5 Questions</option>
+                        <option value="7">7 Questions</option>
+                        <option value="10" selected>10 Questions</option>
+                    </select>
+                </div>
+            </div>
+            
+            <button onclick="generateQuestions()">Generate Questions with Answer Keys</button>
+            
+            <div class="results" id="results">
+                <h2>Generated Questions & Answer Keys</h2>
+                <div id="questionsContainer"></div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        const books = {
+            aesop: {
+                title: "Aesop's Fables",
+                grades: ["K-2", "3-5"],
+                author: "Aesop",
+                questions: {
+                    "K-2": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.1", q: "What animal wins the race against the Hare?", a: "The Tortoise.", f: ["Why does the Tortoise win even though he is slower?", "Can you describe what the Hare does instead of racing?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.3", q: "Why does the Hare fall asleep during the race?", a: "He is so confident he will win that he decides to rest.", f: ["What might have happened if the Hare had stayed awake?", "Do you think the Hare's confidence was justified?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.1", q: "Who helps the Lion when he is trapped in the net?", a: "The Mouse helps the Lion.", f: ["How does the Mouse free the Lion?", "Why does the Lion listen to the Mouse's plea for mercy?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.1.3", q: "What does the Tortoise's behavior show about his character?", a: "He is patient, determined, and doesn't give up.", f: ["How would the story be different if the Tortoise had given up?", "Why is perseverance more important than speed?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.1.2", q: "Why is the Hare's speed not enough to win?", a: "Because he is overconfident and wastes his advantage by sleeping.", f: ["What other weaknesses does the Hare show?", "How does overconfidence lead to failure?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.1.5", q: "How are the Tortoise and the Mouse similar in these fables?", a: "Both are small or slow but prove they are valuable and helpful.", f: ["What do these characters have in common besides size?", "What is the lesson both fables teach about judging others?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.1.6", q: "Do you think the Hare should have won? Why or why not?", a: "No, because he didn't try his best; he was careless and lazy.", f: ["If you were the Hare, what would you do differently?", "Is there ever a time when the fastest or strongest person should win?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.1.2", q: "Which lesson is more important: slow and steady wins, or kindness to all?", a: "Answers will vary, but both teach valuable lessons about character.", f: ["Why might both lessons be important for living well?", "Can you think of a time when you learned one of these lessons?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.1", q: "What does the Mouse do to free the Lion from the net?", a: "He gnaws through the ropes with his teeth.", f: ["Why is the Mouse able to do something the strong Lion cannot?", "What does this tell us about different kinds of strength?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.1.3", q: "What does the Lion learn from the Mouse's kindness?", a: "That even the smallest creature can be important and helpful.", f: ["Why did the Lion originally not value the Mouse?", "How does this change the Lion's perspective?"] }
+                    ],
+                    "3-5": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "Who are the two main characters in 'The Tortoise and the Hare'?", a: "The Tortoise and the Hare.", f: ["What role does each character play in the story?", "Are there other important characters we should remember?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "How does the race end?", a: "The Tortoise wins the race.", f: ["What is the Hare doing when the Tortoise finishes?", "Why doesn't the Hare wake up in time?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "How does the Mouse help the Lion?", a: "By chewing through the ropes that trap him in the hunter's net.", f: ["What equipment or special powers does the Mouse need to do this?", "Why can't the Lion free himself?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "What character trait does the Hare lack?", a: "Humility and the ability to take his competitor seriously.", f: ["How does the Hare's attitude affect his performance?", "What would happen if the Hare showed more respect for the Tortoise?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "Why is the Tortoise successful despite being slow?", a: "He is persistent, focused, and does not get distracted.", f: ["What distracts the Hare that doesn't distract the Tortoise?", "How do these personality differences affect the outcome?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "What is the main lesson of 'The Tortoise and the Hare'?", a: "Steady effort and perseverance are more valuable than natural talent alone.", f: ["How does the story prove this lesson?", "Can you think of other examples where this is true?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.5", q: "How do both fables teach similar lessons?", a: "Both show that size, speed, and strength are less important than character and determination.", f: ["What character traits help the Tortoise and Mouse succeed?", "Why does Aesop tell these two stories together?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.6", q: "Which character do you admire more: the Tortoise or the Mouse? Why?", a: "Answers vary; both show admirable qualities like persistence and courage.", f: ["What specific actions make each character admirable?", "Who would you want as a friend and why?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "Why do you think Aesop told these stories?", a: "To teach moral lessons about good character and values.", f: ["What values does Aesop want us to learn?", "Are these lessons still important today?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "What does the Lion learn from the Mouse's kindness?", a: "That even the smallest creature can be important and helpful.", f: ["Why did the Lion originally not value the Mouse?", "How does this change the Lion's perspective?"] }
+                    ]
+                }
+            },
+            fairy: {
+                title: "Fairy Tales by Hans Christian Andersen",
+                grades: ["K-2", "3-5"],
+                author: "Hans Christian Andersen",
+                questions: {
+                    "K-2": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.1", q: "What do the other ducklings do to the Ugly Duckling?", a: "They tease him and call him names.", f: ["Why do they treat him this way?", "How does the Ugly Duckling react?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.3", q: "Where does the Ugly Duckling go when he leaves home?", a: "He runs away into the woods and marshes.", f: ["What does he encounter there?", "Is this a safe place for him?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.1", q: "What season finally comes to help the Ugly Duckling?", a: "Spring comes, and he can swim again.", f: ["What changes when spring arrives?", "Why is spring important to the story?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.3", q: "Who finally accepts the Ugly Duckling as he is?", a: "The other swans welcome him and say he is one of them.", f: ["How do the swans treat him?", "Why is their acceptance so important?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.1.2", q: "Why do the other ducklings treat the Ugly Duckling badly?", a: "Because he looks different from them and is not like the others.", f: ["Is it right to treat someone badly because they are different?", "Why do people sometimes do this?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.1.3", q: "How does the Ugly Duckling feel when the other swans accept him?", a: "Happy, welcomed, and finally loved for who he is.", f: ["What makes him feel this way?", "Has he felt this way before?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.1.5", q: "Why is the story called 'The Ugly Duckling'?", a: "Because he appears ugly at first, but beauty is revealed later.", f: ["Is the duckling really ugly, or does everyone just think so?", "What changes—the duckling or people's opinions?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.1.6", q: "Is it right that the ducklings teased the Ugly Duckling? Why?", a: "No, because it is wrong to make fun of someone for being different.", f: ["What should the ducklings have done instead?", "What would you do if you met someone different?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.1.2", q: "What would you tell someone who felt like the Ugly Duckling?", a: "That everyone is special in their own way and will find where they belong.", f: ["Has anyone ever made you feel like the Ugly Duckling?", "How can we help others feel accepted?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.1.3", q: "Describe the Ugly Duckling's appearance at the beginning of the story.", a: "He is large, gray, and looks very different from his siblings.", f: ["Why do you think he looks so different?", "Does his appearance change throughout the story?"] }
+                    ],
+                    "3-5": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "Describe the Ugly Duckling's appearance at the beginning of the story.", a: "He is large, gray, and looks very different from his siblings.", f: ["Why might his appearance change?", "What hints does Andersen give about his true identity?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "What hardship does the Ugly Duckling face in winter?", a: "He nearly freezes in the cold water.", f: ["How does he survive this hardship?", "What does winter represent in the story?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "What do the other swans tell the Ugly Duckling when he appears?", a: "They welcome him and say he is one of them.", f: ["How does he react to this acceptance?", "Why do the swans recognize him as one of their own?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "Why does Andersen include the winter season in the story?", a: "To show the Ugly Duckling's suffering and test his survival.", f: ["How would the story be different without winter?", "What does winter teach the Ugly Duckling?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.4", q: "What does 'ugly' really mean in this story?", a: "Not matching others' expectations, but not being bad or wrong.", f: ["Is beauty objective or subjective in this story?", "What makes something truly beautiful?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.5", q: "How does the setting change throughout the story to reflect the Duckling's journey?", a: "From a family home to wilderness, then through winter, finally to spring and acceptance.", f: ["How does each setting match the Duckling's emotions?", "What does each place represent in his journey?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "What universal theme does this tale teach?", a: "That beauty and worth come in many forms and inner qualities matter most.", f: ["How do we see this theme in real life?", "Why is this message important?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.6", q: "Do you think the Ugly Duckling's journey was necessary? Could he have been happy before?", a: "Answers vary; the journey teaches him about himself and the world.", f: ["What would the Ugly Duckling have missed without this journey?", "Is suffering sometimes necessary for growth?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "How does Andersen show compassion through this story?", a: "By showing that everyone deserves acceptance and kindness.", f: ["Who shows compassion to the Ugly Duckling?", "How do we show compassion in our own lives?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "Why is his reflection so important to the story's ending?", a: "Seeing his new form helps him understand he has truly transformed.", f: ["Does the duckling physically change or do others' opinions change?", "What is the significance of him seeing his own reflection?"] }
+                    ]
+                }
+            },
+            charlotte: {
+                title: "Charlotte's Web",
+                grades: ["3-5"],
+                author: "E.B. White",
+                questions: {
+                    "3-5": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "Why does Wilbur live on the farm?", a: "He is a pig being raised by Farmer John.", f: ["What does Wilbur do on the farm?", "How does he spend his days?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "Who becomes Wilbur's best friend?", a: "Charlotte, a spider who lives in the barn.", f: ["Why does Charlotte become Wilbur's friend?", "How are they different?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "Why is Wilbur in danger at the beginning of the story?", a: "Because Farmer John plans to kill him and make him into bacon and ham.", f: ["Who tells Wilbur about this plan?", "How does Wilbur react?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "What does Charlotte write in her web?", a: "Words like 'Some Pig,' 'Terrific,' and 'Radiant' to describe Wilbur.", f: ["Why does Charlotte write these words?", "What do these words mean?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "Why does Charlotte help Wilbur?", a: "Because she cares about him and wants to save his life.", f: ["What does this show about Charlotte's character?", "Would most animals help this way?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "How does Wilbur feel about Charlotte?", a: "He loves her deeply and values her friendship above everything.", f: ["What does Wilbur learn from Charlotte?", "How does Charlotte change him?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.5", q: "How does the author show that friendship is more valuable than life itself?", a: "Through Charlotte's sacrifice—she dies to save Wilbur, showing true love.", f: ["What does Charlotte give up?", "Why is her sacrifice so powerful?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "What is the main theme of Charlotte's Web?", a: "That true friendship and love are eternal, even when death separates friends.", f: ["How does the story show this theme?", "What makes this message so important?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.6", q: "Do you think Wilbur should have tried to save Charlotte? Why or why not?", a: "Answers vary; he was powerless to stop her death, but he honors her memory.", f: ["What could Wilbur have done?", "Is there always something we can do to help a friend?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.4", q: "What does 'Some Pig' really mean in Charlotte's words?", a: "It means Wilbur is special, unique, and worthy of being saved and remembered.", f: ["How are Charlotte's words different from ordinary words?", "Why does language have the power to change lives?"] }
+                    ]
+                }
+            },
+            alice: {
+                title: "Alice's Adventures in Wonderland",
+                grades: ["3-5", "5-6"],
+                author: "Lewis Carroll",
+                questions: {
+                    "3-5": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "Who does Alice follow into the rabbit hole?", a: "The White Rabbit.", f: ["Why does the White Rabbit seem unusual?", "What makes Alice want to follow him?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "Why is the White Rabbit in such a hurry?", a: "He is checking his watch and is late for an important appointment.", f: ["What does the watch tell us about the Rabbit's world?", "Is time important in Wonderland?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "What makes Alice grow and shrink in Wonderland?", a: "Drinking potions and eating cakes labeled 'Drink Me' and 'Eat Me'.", f: ["Why do these items have labels?", "What happens each time Alice changes size?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "What does Alice's decision to follow the Rabbit show about her character?", a: "She is curious and willing to explore new and strange places.", f: ["Is curiosity always a good thing?", "What dangers does Alice face because of her curiosity?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "Why does Carroll describe Alice's fall in such detail?", a: "To create a dreamlike feeling and show the strange nature of Wonderland.", f: ["How does the detailed description affect how you picture the story?", "Why might Carroll want us to feel like we are dreaming?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.5", q: "How is Wonderland different from the real world Alice knows?", a: "The rules of logic and physics do not apply; things are illogical and magical.", f: ["Can you give examples of illogical events in Wonderland?", "Why might Carroll create a world with different rules?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "What does Alice's confusion in Wonderland represent?", a: "The feeling of being in an unfamiliar place where nothing makes sense.", f: ["When have you felt confused like Alice?", "How does Alice try to make sense of Wonderland?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.6", q: "Would you want to visit Wonderland like Alice? Why or why not?", a: "Answers vary; it's exciting but also dangerous and confusing.", f: ["What would be the best part of visiting Wonderland?", "What would be the scariest part?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.4", q: "What do you think happens to Alice at the very end of the story?", a: "She wakes up, suggesting Wonderland was a dream.", f: ["Was Wonderland a real place or just a dream?", "Does it matter whether it was real or imagined?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "Who does Alice meet that acts as a guide in Wonderland?", a: "The Cheshire Cat, the Caterpillar, and other creatures help her.", f: ["Does each character help Alice in the same way?", "Who is the most helpful character Alice meets?"] }
+                    ],
+                    "5-6": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.1", q: "What event triggers Alice's journey to Wonderland?", a: "She chases the White Rabbit down a rabbit hole after seeing him check his watch.", f: ["What would happen if Alice had not followed the Rabbit?", "Why does Carroll make the Rabbit check a watch?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "What are the consequences of Alice eating and drinking items in Wonderland?", a: "She repeatedly grows larger and smaller, causing her confusion.", f: ["How does Alice's changing size affect her journey?", "Does her size matter in Wonderland?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "Describe what Alice encounters in Wonderland.", a: "She meets strange creatures like a Cheshire Cat, a Caterpillar, a Mad Hatter, and a Queen.", f: ["What is unusual about each of these characters?", "How do they treat Alice?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "What does the White Rabbit's constant hurrying suggest about Wonderland society?", a: "There are rules, authority, and expectations, making it not so different from reality.", f: ["Is Wonderland as different from reality as it seems?", "What similar rules exist in both worlds?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.5.4", q: "Why does Carroll make the Wonderland creatures so absurd and illogical?", a: "To satirize adult society and show the absurdity in rules and customs.", f: ["What adults or adult rules might Carroll be making fun of?", "Why use animals to represent human behavior?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.5.5", q: "How does Alice's size changing symbolize her journey?", a: "Her changing size reflects her vulnerability and loss of control in an alien world.", f: ["How does feeling small or big affect how we act?", "What does Alice's size say about her power in Wonderland?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "What is the significance of Alice questioning the logic of Wonderland?", a: "She represents reason attempting to understand an irrational world.", f: ["Do Alice's logical arguments ever work in Wonderland?", "What does this say about logic and reason?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.5.6", q: "Is Alice a good protagonist for this adventure? What makes her suitable?", a: "Yes; her curiosity, intelligence, and courage help her navigate Wonderland.", f: ["What would a different protagonist have done?", "Are Alice's traits admirable or problematic?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "What message do you think Carroll sends about childhood and imagination?", a: "That imagination is valuable and children's perspectives are important.", f: ["Why might Carroll celebrate children's imagination?", "What can adults learn from children?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.5.5", q: "How does the dream frame of the story affect its meaning?", a: "It allows Carroll to break real-world rules and explore imagination freely.", f: ["What could Carroll do in a dream that he couldn't do in reality?", "Why might he want to explore ideas through dreams?"] }
+                    ]
+                }
+            },
+            jungle: {
+                title: "The Jungle Book",
+                grades: ["3-5", "5-6"],
+                author: "Rudyard Kipling",
+                questions: {
+                    "3-5": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "Who are Mowgli's two main protectors in the jungle?", a: "Baloo the bear and Bagheera the panther.", f: ["What does each one teach Mowgli?", "Why does Mowgli need two protectors?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "Why does Mowgli live in the jungle instead of with humans?", a: "He was abandoned or lost as a baby and the wolves found and raised him.", f: ["Who found Mowgli first?", "Could things have been different if someone else found him?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "Who is Shere Khan?", a: "A tiger who is dangerous and wants to hunt Mowgli.", f: ["Why does Shere Khan want to hurt Mowgli?", "What makes him different from other jungle animals?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.3.1", q: "What is the Law of the Jungle?", a: "A set of rules that govern how all animals must behave to maintain peace and order.", f: ["Who created the Law of the Jungle?", "What happens to animals that break the law?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.3", q: "What makes Mowgli different from all the other jungle animals?", a: "He is human and can think, plan, and use tools in ways animals cannot.", f: ["How does Mowgli's difference help him?", "Does it ever hurt him?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "Why is Shere Khan dangerous to Mowgli?", a: "Shere Khan is a tiger who sees Mowgli as prey and wants to hunt him.", f: ["Why does Shere Khan feel this way about Mowgli?", "Can they ever be friends?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.5", q: "What does Baloo teach Mowgli?", a: "How to survive in the jungle and the ways of the jungle animals.", f: ["How is Baloo's teaching different from human schooling?", "What subjects does Baloo cover?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "How does Mowgli balance being both human and part of the jungle?", a: "He learns animal skills and follows jungle rules but keeps his human intelligence.", f: ["Is Mowgli fully human or fully animal?", "Can someone belong to two worlds at once?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.6", q: "Does Mowgli belong more with humans or in the jungle? Why?", a: "Answers vary; he has adapted to jungle life but is still human.", f: ["Where would Mowgli be happiest?", "What makes a place 'home' for Mowgli?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.3.2", q: "Who or what is the biggest threat to peace in the jungle?", a: "Shere Khan, who does not follow the Law of the Jungle and hunts recklessly.", f: ["What makes someone a threat to a society?", "How should the jungle handle Shere Khan?"] }
+                    ],
+                    "5-6": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.1", q: "Describe how Mowgli comes to live in the jungle.", a: "He is lost or abandoned, and the wolf pack finds and adopts him.", f: ["Who might have abandoned Mowgli?", "Why do the wolves decide to raise him?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "What role does each animal play in Mowgli's education?", a: "Baloo teaches survival, Bagheera teaches cunning, and others teach respect for the jungle.", f: ["What specific lessons does each animal teach?", "Are all these lessons equally important?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "What does Kipling describe about Shere Khan's character?", a: "He is powerful, prideful, and unwilling to follow the Law of the Jungle.", f: ["How is Shere Khan different from other tigers?", "Why does he reject the Law?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "What does Kipling suggest about humanity by making Mowgli superior in intelligence?", a: "That humans have unique thinking and planning abilities that set them apart.", f: ["Is human intelligence always superior?", "What advantages do animals have over humans?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "Why does Shere Khan represent a threat beyond physical danger?", a: "He represents disorder and the breaking of the Law of the Jungle that keeps peace.", f: ["How does one rule-breaker threaten an entire society?", "What happens when laws are not followed?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.5.5", q: "How does the Law of the Jungle create order in a wild place?", a: "By establishing rules all animals follow, preventing chaos and endless conflict.", f: ["Why is law and order necessary even in nature?", "What would happen without the Law of the Jungle?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "What does Mowgli's dual nature (human and jungle animal) represent?", a: "The conflict between civilization and nature, reason and instinct.", f: ["Which side of Mowgli is stronger?", "Can these two sides exist together?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.5.6", q: "Is the jungle a safe or dangerous place for Mowgli? How does Kipling show this?", a: "Both; it has danger but also rules and communities that protect him.", f: ["What makes the jungle both safe and dangerous?", "Would Mowgli be safer in human civilization?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "What is Mowgli's greatest strength in surviving the jungle?", a: "His human intelligence combined with physical abilities learned from animals.", f: ["What would Mowgli be like without his intelligence?", "What would he be like without his jungle training?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "Why does Bagheera's friendship matter to Mowgli?", a: "Bagheera is intelligent and protective, helping Mowgli stay safe from danger.", f: ["What does Mowgli learn from Bagheera that he doesn't learn from Baloo?", "Can Mowgli trust Bagheera completely?"] }
+                    ]
+                }
+            },
+            island: {
+                title: "Island of the Blue Dolphins",
+                grades: ["5-6"],
+                author: "Scott O'Dell",
+                questions: {
+                    "5-6": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.1", q: "Why is Karana left alone on the island?", a: "She jumps off the ship to stay with her brother Ramo, who was left behind.", f: ["What does this show about Karana's character?", "Does she regret this decision?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "What is Karana's main goal while living on the island?", a: "To survive alone on the island until she can be rescued.", f: ["What challenges does she face?", "How long must she survive?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.1", q: "What animals does Karana befriend on the island?", a: "A wild dog and eventually sea otters and other creatures.", f: ["Why does she befriend these animals?", "How do they help her survive?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "What does Karana have to do to survive on the island?", a: "She hunts, gathers food, builds shelter, and creates tools and weapons.", f: ["What skills must she learn?", "Are these difficult tasks for her?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "Why is the wild dog important to Karana's survival?", a: "He becomes her companion, protects her, and helps her through loneliness and fear.", f: ["What does the dog represent?", "How does friendship help survival?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.5.3", q: "What does Karana learn about herself during her time alone on the island?", a: "She discovers her strength, courage, and ability to survive against great odds.", f: ["How does isolation change her?", "What would she be like if rescued earlier?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.5.5", q: "How does O'Dell use the island as more than just a setting?", a: "The island becomes a character itself, testing and shaping Karana through natural challenges.", f: ["What does the island teach Karana?", "How is nature portrayed in the story?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.5.2", q: "What is the main theme of Island of the Blue Dolphins?", a: "The strength of human will and the ability to survive through courage, resourcefulness, and connection.", f: ["How does Karana embody this theme?", "What examples show this?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.5.6", q: "Do you think Karana made the right choice jumping off the ship? Why or why not?", a: "Answers vary; she was brave to choose family, but it put her in great danger.", f: ["What would you have done?", "What does her choice say about her values?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.5.4", q: "What does survival mean in this novel?", a: "It goes beyond staying alive; it means finding purpose, friendship, and peace despite isolation.", f: ["Is physical survival enough?", "What else does Karana need to truly survive?"] }
+                    ]
+                }
+            },
+            littlewomen: {
+                title: "Little Women",
+                grades: ["6-8"],
+                author: "Louisa May Alcott",
+                questions: {
+                    "6-8": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "Why do the March girls have no Christmas presents at the beginning of the novel?", a: "Because their family is poor and their father is away fighting in the war.", f: ["How does the war affect the March family?", "What do the girls do instead of giving presents?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.3", q: "Name each sister and describe her main personality or passion.", a: "Jo loves writing, Meg values family, Beth loves music, Amy loves art.", f: ["How are their personalities different?", "Do any of them change their interests during the novel?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "What sacrifices does each sister make for the family?", a: "Jo cuts her hair, Meg works as a governess, Beth tends the house, Amy stops pursuing art lessons.", f: ["Why does each sister make these sacrifices?", "What do these sacrifices show about each character?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "What major life event occurs at the novel's beginning and how does it affect the family?", a: "Their father is away at war; this creates financial hardship and emotional strain.", f: ["How long is he away?", "Does the family eventually resolve this hardship?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.6.2", q: "What does the family's poverty teach the girls?", a: "That family love and character matter more than material possessions.", f: ["How do the girls' values change because of their poverty?", "Would they be different if they were rich?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.6.3", q: "Why is Jo's ambition to be a writer significant?", a: "It shows her desire for independence and self-determination in a restrictive society.", f: ["What challenges does Jo face as an aspiring female writer?", "Does she achieve her dream?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.6.5", q: "How does Alcott use the setting of winter to reflect the girls' situation?", a: "Cold and hardship mirror their financial struggles and emotional challenges.", f: ["What other settings does Alcott use to show emotion?", "How does the ending weather differ from the beginning?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.6.2", q: "How does sisterhood function as a central theme in the novel?", a: "The girls' bond sustains them through hardship and shapes their individual development.", f: ["How do the sisters support each other?", "Are there moments when sisterhood is tested?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.6.6", q: "Which sister's journey do you find most compelling? Why?", a: "Answers vary based on personal connection to each character's story.", f: ["What makes each sister's journey unique?", "Who would you want to be most like?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.6.2", q: "What does the novel suggest about the relationship between character and circumstance?", a: "That one's moral character is more important than one's economic situation.", f: ["Can good character overcome bad circumstances?", "What examples show this in the novel?"] }
+                    ]
+                }
+            },
+            treasure: {
+                title: "Treasure Island",
+                grades: ["6-8"],
+                author: "Robert Louis Stevenson",
+                questions: {
+                    "6-8": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "Why does Jim Hawkins join the voyage to Treasure Island?", a: "He is hired to work aboard a ship searching for buried pirate treasure.", f: ["What is Jim's role on the ship?", "Why does he agree to go?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.3", q: "Who is Long John Silver and what is his role?", a: "He is a pirate and crew member who eventually leads a mutiny against the captain.", f: ["How does Silver hide his true nature?", "When does Jim discover Silver's secret?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "What does Jim discover that changes the course of the adventure?", a: "He learns of a mutiny plot and hears conversations about the pirates' plans.", f: ["How does Jim use this information?", "Does his discovery help or hurt his friends?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "How is the treasure finally found and what happens to it?", a: "Jim and the good characters find and recover most of the treasure.", f: ["Who gets to keep the treasure?", "Does everyone get their fair share?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.6.2", q: "What does Stevenson suggest about the nature of greed through the treasure hunt?", a: "That the desire for wealth corrupts people and leads to violence and betrayal.", f: ["Which characters are motivated by greed?", "How does greed destroy relationships?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.6.3", q: "Why is Jim's youth an advantage in the story?", a: "People underestimate him, allowing him to discover their plans and help the good characters.", f: ["What can Jim do because of his youth?", "What would happen if an adult filled his role?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.6.5", q: "How does Stevenson build suspense throughout the novel?", a: "Through secrets, double-crosses, and constant danger that keeps the outcome uncertain.", f: ["What are the biggest moments of suspense?", "How does Stevenson keep us wondering what will happen?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.6.5", q: "What is the significance of the island setting?", a: "It isolates the characters and makes escape impossible, intensifying the conflict.", f: ["How would the story be different on a ship?", "What does the island represent?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.6.6", q: "Does Jim handle the moral challenges he faces well? Why or why not?", a: "Answers vary; he is brave but also makes mistakes and must learn.", f: ["What mistakes does Jim make?", "Does he learn from them?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.6.3", q: "What makes Long John Silver a complex villain?", a: "He is charming and seemingly friendly, but is driven by greed and willing to kill.", f: ["Why do people trust Silver despite his true nature?", "Can we sympathize with villains?"] }
+                    ]
+                }
+            },
+            sherlock: {
+                title: "Adventures of Sherlock Holmes",
+                grades: ["6-8"],
+                author: "Arthur Conan Doyle",
+                questions: {
+                    "6-8": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "What are Sherlock Holmes's most distinctive qualities as a detective?", a: "Keen observation, logical reasoning, and the ability to deduce the truth from small clues.", f: ["What sets Holmes apart from other detectives?", "Can anyone learn to observe like Holmes?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.3", q: "Who is Watson and what is his relationship to Holmes?", a: "Watson is Holmes's friend and the narrator who records his adventures.", f: ["Why is Watson important to the stories?", "What is their partnership like?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.1", q: "Describe Holmes's method of solving a crime from clues.", a: "He observes minute details like mud, ash, or footprints others overlook and reasons from them.", f: ["How does he find these small clues?", "What can mud tell him about a suspect?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.6.3", q: "What role do emotions and relationships play in the Holmes stories?", a: "They often complicate cases and can distract from pure logic and reason.", f: ["Does emotion ever help Holmes?", "When do emotions harm his investigations?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.6.2", q: "Why does Holmes rely more on science and observation than on official police methods?", a: "Because he believes careful analysis reveals truth better than standard procedures.", f: ["What is wrong with official police methods?", "Can science always reveal the truth?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.6.4", q: "What does Holmes mean when he says emotions cloud judgment?", a: "That feelings can prevent people from seeing facts clearly and thinking logically.", f: ["Is Holmes always right about this?", "Do emotions ever help us understand truth?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.6.5", q: "How does Doyle establish Holmes's reputation through Watson's narration?", a: "Watson describes cases others cannot solve but Holmes easily unravels through deduction.", f: ["Why does Doyle choose Watson as narrator?", "How would the stories be different if Holmes narrated?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.6.2", q: "What does Holmes's character suggest about the power of intellect?", a: "That intelligence and reason can overcome obstacles and reveal hidden truths.", f: ["Is intelligence always powerful?", "What can intelligence not do?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.6.6", q: "Are Holmes's methods ethical? Are there situations where they should not be used?", a: "Answers vary; his methods are effective but sometimes violate privacy or involve deception.", f: ["When is deception justified?", "What limits should detective work have?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.6.6", q: "Why is Watson's perspective important in the stories?", a: "He represents the reader, allowing us to marvel at Holmes's abilities alongside him.", f: ["What would the stories be like without Watson?", "Do we identify with Watson or Holmes?"] }
+                    ]
+                }
+            },
+            moby: {
+                title: "Moby Dick",
+                grades: ["9-12"],
+                author: "Herman Melville",
+                questions: {
+                    "9-12": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.1", q: "Why does Ishmael initially decide to go to sea?", a: "To escape restlessness and depression on land; he seeks adventure and purpose.", f: ["What pushes Ishmael to make this decision?", "Is going to sea a healthy choice for him?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What is Captain Ahab's obsession and what has caused it?", a: "He is obsessed with hunting Moby Dick, the white whale that destroyed his ship and took his leg.", f: ["Has Ahab always been obsessed?", "Could he let go of his obsession?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.1", q: "What is the significance of Ishmael's survival at the novel's end?", a: "It allows him to tell the tale and suggest that perspective and reflection matter.", f: ["Why does Ishmael survive when others don't?", "What would we not know if Ishmael had died?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What happens to the Pequod?", a: "It is destroyed by Moby Dick in the novel's climax.", f: ["How does the ship get destroyed?", "Could the ship have been saved?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.9-10.2", q: "What does Moby Dick represent in the novel?", a: "Nature's power, the unknowable, fate, and the limits of human control and understanding.", f: ["Is Moby Dick evil or just a whale?", "What do other characters think Moby Dick represents?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "Why does Ahab's obsession spread to the entire crew?", a: "His commanding personality and eloquence convince the crew to share his vengeful goal.", f: ["Are the crew members forced to follow Ahab?", "Could they have resisted?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.9-10.5", q: "How does Melville use the sea as a setting to explore human nature?", a: "The isolation and vastness of the sea force characters to confront themselves and their desires.", f: ["What does the sea reveal about people?", "How would the story be different on land?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.9-10.5", q: "What does the destruction of the Pequod symbolize?", a: "The catastrophic consequences of unchecked ambition, pride, and humanity's attempt to dominate nature.", f: ["What is Melville's message through this destruction?", "Does Ahab get what he deserves?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.9-10.6", q: "Is Ahab a tragic hero or a villain? Justify your answer.", a: "Arguments for both; he shows tragic flaw but also dangerous obsession that endangers others.", f: ["What makes someone a hero vs. a villain?", "Is Ahab sympathetic or dangerous?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What role does the Pequod's diverse crew play in the novel?", a: "They represent different nations and classes unified under Ahab's command, becoming a microcosm of humanity.", f: ["What does the diverse crew suggest?", "How does diversity affect the crew's fate?"] }
+                    ]
+                }
+            },
+            dracula: {
+                title: "Dracula",
+                grades: ["9-12"],
+                author: "Bram Stoker",
+                questions: {
+                    "9-12": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.1", q: "What is Dracula's ultimate goal in coming to England?", a: "To establish himself in England and spread his curse, bringing darkness to a new land.", f: ["Why does Dracula want to come to England?", "What does England represent to him?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.5", q: "How does the epistolary format (letters and documents) serve the novel?", a: "It creates multiple perspectives and builds authenticity, making supernatural events seem real.", f: ["How does this format affect our reading experience?", "Would the story work in a different format?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What transformation does Lucy undergo and what does it reveal?", a: "She becomes a vampire, showing the real danger Dracula poses and motivating the hunt.", f: ["How does Lucy's transformation occur?", "Could it have been prevented?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.1", q: "What is the novel's final resolution regarding Dracula and the protagonists?", a: "Dracula is destroyed, and the survivors are changed but alive and united.", f: ["How is Dracula destroyed?", "What happens to the survivors after?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.9-10.2", q: "What does the vampire represent in Victorian society?", a: "Danger, forbidden desire, threats to morality, sexuality, and traditional social values.", f: ["What Victorian anxieties does the vampire embody?", "Are vampires still relevant metaphors?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.9-10.1", q: "Why are the protagonists successful in defeating Dracula?", a: "Through teamwork, faith, science, and understanding of the vampire's vulnerabilities and limits.", f: ["What is each character's role in the victory?", "Could they have won without all these elements?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.9-10.5", q: "How does Stoker use technology (telegraph, phonograph) in the novel?", a: "Modern technology helps characters combat an ancient evil, showing progress and modernity.", f: ["How does technology enable communication?", "Why does Stoker emphasize technology?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.9-10.4", q: "How does Stoker balance scientific rationalism with superstition and faith?", a: "He shows that both are necessary; science alone cannot defeat supernatural evil.", f: ["When does science fail?", "When does faith succeed?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.9-10.6", q: "What is the moral message of Dracula's defeat?", a: "That good, faith, and community are stronger than evil, darkness, and isolation.", f: ["Is this message optimistic or unrealistic?", "What proof does the novel provide?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What does Mina's character suggest about the New Woman of the Victorian era?", a: "She is intelligent, capable, and essential to defeating evil, challenging traditional gender roles.", f: ["Is Mina progressive for her time?", "How does she compare to other female characters?"] }
+                    ]
+                }
+            },
+            jane: {
+                title: "Jane Eyre",
+                grades: ["9-12"],
+                author: "Charlotte Brontë",
+                questions: {
+                    "9-12": [
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What traumatic experiences shape Jane's early life?", a: "She is mistreated by her aunt, bullied at boarding school, and denied love and belonging.", f: ["How do these experiences affect Jane's character?", "Does she overcome them?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.1", q: "Why does Jane leave Thornfield Hall despite her love for Rochester?", a: "She discovers that Rochester is already married to Bertha Mason, a secret he has hidden.", f: ["How does Jane discover this secret?", "Could Jane have stayed?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.1", q: "How does Jane achieve financial independence and what does it enable?", a: "She learns of her inheritance, which gives her autonomy and allows her to return to Rochester as an equal.", f: ["Why is the inheritance important?", "How does money change Jane's position?"] },
+                        { type: "Literal", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What is the significance of Jane's refusal of St. John Rivers's proposal?", a: "She refuses to sacrifice her identity and authentic self for duty or religious obligation.", f: ["What tempts Jane to say yes?", "Why does she say no?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.9-10.2", q: "What does Jane's independence mean in the context of Victorian society?", a: "She asserts her right to choice, equality, and refusal to be subservient to men or circumstances.", f: ["How radical is Jane's independence?", "What does society expect of her?"] },
+                        { type: "Inferential", standard: "CCSS.ELA-LITERACY.RL.9-10.3", q: "What does Bertha Mason represent in the novel?", a: "Jane's shadow self, the passionate nature Jane must control, and the dangers of female rebellion.", f: ["How are Jane and Bertha connected?", "Why does Bertha exist in the attic?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.9-10.5", q: "How does Brontë use the Gothic and supernatural to explore Jane's psychology?", a: "Mysterious events and dark settings reflect Jane's inner turmoil and psychological journey.", f: ["What is the psychological significance of Gothic elements?", "Are they real or imaginary?"] },
+                        { type: "Analytical", standard: "CCSS.ELA-LITERACY.RL.9-10.6", q: "How does Brontë challenge Victorian expectations for women through Jane?", a: "Jane refuses submission, demands equality in love, and asserts her right to independence.", f: ["What do Victorians expect of women?", "How does Jane defy these expectations?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.9-10.6", q: "What does Rochester's blindness at the novel's end signify?", a: "His humbling and redemption; he is equalized with Jane and dependent on her love rather than dominance.", f: ["Does blindness punish Rochester?", "How does it change his relationship with Jane?"] },
+                        { type: "Evaluative", standard: "CCSS.ELA-LITERACY.RL.9-10.2", q: "Is Jane's ending a feminist victory or a compromise of her principles?", a: "Answers vary; she gains love but within marriage, suggesting both autonomy and traditional bonds.", f: ["What does Jane gain?", "What does she sacrifice?"] }
+                    ]
+                }
+            }
+        };
+        
+        function updateBookInfo() {
+            const selectedBook = document.getElementById('bookSelect').value;
+            const gradeLevelSelect = document.getElementById('gradeLevel');
+            
+            if (!selectedBook || !books[selectedBook]) {
+                document.getElementById('bookTitle').textContent = 'Select a book';
+                document.getElementById('bookGrade').textContent = '-';
+                document.getElementById('bookAuthor').textContent = '-';
+                gradeLevelSelect.innerHTML = '<option value="">Select a book first</option>';
+                gradeLevelSelect.disabled = true;
+                return;
+            }
+            
+            const book = books[selectedBook];
+            document.getElementById('bookTitle').textContent = book.title;
+            document.getElementById('bookGrade').textContent = book.grades.join(', ');
+            document.getElementById('bookAuthor').textContent = book.author;
+            
+            // Lock grade levels to this book
+            gradeLevelSelect.innerHTML = '';
+            book.grades.forEach(grade => {
+                const option = document.createElement('option');
+                option.value = grade;
+                option.textContent = 'Grade ' + grade;
+                gradeLevelSelect.appendChild(option);
+            });
+            gradeLevelSelect.disabled = false;
+        }
+        
+        function generateQuestions() {
+            const selectedBook = document.getElementById('bookSelect').value;
+            const gradeLevel = document.getElementById('gradeLevel').value;
+            const numQuestions = parseInt(document.getElementById('numQuestions').value);
+            
+            if (!selectedBook) {
+                alert('Please select a book first');
+                return;
+            }
+            
+            if (!gradeLevel) {
+                alert('Please select a grade level');
+                return;
+            }
+            
+            const book = books[selectedBook];
+            let questions = book.questions[gradeLevel];
+            
+            if (!questions) {
+                alert('No questions available for this grade level');
+                return;
+            }
+            
+            const selectedQuestions = questions.slice(0, numQuestions);
+            displayQuestions(selectedQuestions);
+        }
+        
+        function displayQuestions(questions) {
+            const container = document.getElementById('questionsContainer');
+            container.innerHTML = '';
+            
+            // Group by type
+            const grouped = {};
+            const typeOrder = ['Literal', 'Inferential', 'Analytical', 'Evaluative'];
+            
+            questions.forEach(q => {
+                if (!grouped[q.type]) {
+                    grouped[q.type] = [];
+                }
+                grouped[q.type].push(q);
+            });
+            
+            typeOrder.forEach(type => {
+                if (grouped[type]) {
+                    // Add type header
+                    const typeSection = document.createElement('div');
+                    typeSection.className = 'question-type-section';
+                    
+                    const header = document.createElement('div');
+                    header.className = 'question-type-header';
+                    header.textContent = type.toUpperCase() + ' QUESTIONS';
+                    typeSection.appendChild(header);
+                    
+                    // Add questions of this type
+                    grouped[type].forEach((item, index) => {
+                        const card = document.createElement('div');
+                        card.className = 'question-card';
+                        
+                        let html = `<div class="question-number">Question ${questions.indexOf(item) + 1}</div>`;
+                        html += `<div class="standard-label">Standard: ${item.standard}</div>`;
+                        html += `<div class="question-text">${item.q}</div>`;
+                        html += `<div class="answer-key">
+                            <span class="answer-key-label">ANSWER KEY</span>
+                            <div class="answer-key-text">${item.a}</div>
+                        </div>`;
+                        
+                        if (item.f && item.f.length > 0) {
+                            html += `<div class="follow-up-section">
+                                <div class="follow-up-label">Follow-Up Questions to Extend Thinking</div>`;
+                            item.f.forEach(followUp => {
+                                html += `<div class="follow-up-item">• ${followUp}</div>`;
+                            });
+                            html += `</div>`;
+                        }
+                        
+                        card.innerHTML = html;
+                        typeSection.appendChild(card);
+                    });
+                    
+                    container.appendChild(typeSection);
+                }
+            });
+            
+            document.getElementById('results').classList.add('show');
+        }
+    </script>
+</body>
+</html>
