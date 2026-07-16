@@ -49,7 +49,6 @@
         .standard-label { font-size: 11px; color: #999; margin-bottom: 10px; font-weight: 500; }
         .question-text { color: #333; margin-bottom: 15px; line-height: 1.6; font-size: 16px; font-weight: 500; }
 
-        /* Open-ended */
         .answer-key { background: #e3f2fd; border-left: 4px solid #2196F3; padding: 12px; border-radius: 4px; margin-bottom: 12px; }
         .answer-key-label { font-weight: 700; color: #1976D2; display: block; margin-bottom: 6px; font-size: 11px; }
         .answer-key-text { color: #1565C0; font-size: 14px; line-height: 1.5; font-style: italic; }
@@ -57,7 +56,6 @@
         .follow-up-label { font-weight: 600; color: #1565C0; font-size: 12px; margin-bottom: 8px; text-transform: uppercase; }
         .follow-up-item { color: #1565C0; font-size: 13px; margin-bottom: 6px; line-height: 1.5; }
 
-        /* Multiple choice */
         .mc-options { margin-top: 6px; }
         .mc-option { display: flex; align-items: center; border: 2px solid #e0e0e0; border-radius: 6px; padding: 11px 14px; margin-bottom: 9px; cursor: pointer; font-size: 15px; color: #333; transition: all 0.15s; background: white; }
         .mc-option:hover { border-color: #667eea; background: #f5f6ff; }
@@ -103,8 +101,9 @@
                     <div class="form-group">
                         <label for="numQuestions">Number of Questions:</label>
                         <select id="numQuestions">
-                            <option value="4">4 Questions</option>
-                            <option value="5" selected>5 Questions (all)</option>
+                            <option value="5">5 Questions</option>
+                            <option value="8">8 Questions</option>
+                            <option value="10" selected>10 Questions (all)</option>
                         </select>
                     </div>
                 </div>
@@ -121,7 +120,6 @@
     </div>
 
     <script>
-        // Grade bands, in order.
         const BANDS = ["K-1", "1-2", "3-4", "5-6", "7-8", "8-9", "9-10", "11-12"];
         const BAND_LABELS = {
             "K-1": "Kindergarten – Grade 1", "1-2": "Grades 1 – 2", "3-4": "Grades 3 – 4",
@@ -129,61 +127,97 @@
             "9-10": "Grades 9 – 10", "11-12": "Grades 11 – 12"
         };
 
-        // Each question: { type, standard, q, a (open answer), f [follow-ups], choices [4], correct (index) }
+        // 10 questions per book, ordered so any slice covers the four levels.
         const books = {
             aesop: { title: "Aesop's Fables", author: "Aesop", band: "K-1", questions: [
                 { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.1.1 — Ask and answer questions about key details in a text.",
                   q:"In \"The Tortoise and the Hare,\" who wins the race?", a:"The Tortoise wins the race.",
                   f:["Why does the Tortoise win even though he is slow?","What was the Hare doing while the Tortoise kept going?"],
                   choices:["The Hare","The Tortoise","The Owl","The Fox"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.1.3 — Describe characters, settings, and major events in a story.",
-                  q:"Why does the Hare stop during the race?", a:"He is so far ahead that he decides to take a nap.",
-                  f:["What happens while the Hare is napping?","Was napping a good choice? Why not?"],
-                  choices:["He gets hurt","He takes a nap because he is sure he will win","He goes home for lunch","He gets lost"], correct:1 },
                 { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.1.3 — Describe characters using key details.",
                   q:"What kind of character is the Tortoise?", a:"He is slow but steady, patient, and never gives up.",
                   f:["Which word fits the Tortoise better: 'lazy' or 'determined'?","How does not giving up help him?"],
                   choices:["Fast and careless","Slow but steady and determined","Mean and tricky","Scared and shy"], correct:1 },
-                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.1.2 — Retell stories and demonstrate understanding of the central message or lesson.",
-                  q:"What lesson does this fable teach?", a:"Slow and steady wins the race — keep trying and do not give up.",
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.1.2 — Determine the central message or lesson.",
+                  q:"What lesson does \"The Tortoise and the Hare\" teach?", a:"Slow and steady wins the race — keep trying and do not give up.",
                   f:["Can you think of a time when being steady helped you?","Why is 'never give up' a good lesson?"],
                   choices:["Always take a nap","Slow and steady wins the race","Running is bad for you","Rabbits are the fastest"], correct:1 },
-                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.1.1 — Ask and answer questions about key details.",
-                  q:"Was the Hare a good sport? Why or why not?", a:"No — he bragged and was careless, so he lost. A good sport tries hard and is kind.",
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.1.1 — Use key details to support an answer.",
+                  q:"Was the Hare a good sport? Why or why not?", a:"No — he bragged and was careless, so he lost. A good sport tries hard and stays kind.",
                   f:["What should the Hare have done differently?","How would you feel if you were the Tortoise?"],
-                  choices:["Yes, he was kind and careful","No, he bragged and was careless","Yes, he helped the Tortoise","No, he cheated to win"], correct:1 }
+                  choices:["Yes, he was kind and careful","No, he bragged and was careless","Yes, he helped the Tortoise","No, he cheated to win"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.1.3 — Describe major events in a story.",
+                  q:"Why does the Hare stop during the race?", a:"He is so far ahead that he decides to take a nap.",
+                  f:["What happens while the Hare is napping?","Was napping a good choice? Why not?"],
+                  choices:["He gets hurt","He takes a nap because he is sure he will win","He goes home for lunch","He gets lost"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.1.3 — Describe characters and their actions.",
+                  q:"In \"The Lion and the Mouse,\" why is the little Mouse able to help the big Lion?", a:"Even though the Mouse is tiny, he is grateful and chews the net to free the Lion.",
+                  f:["How can a small friend help a big one?","Why did the Lion let the Mouse go earlier?"],
+                  choices:["Because he is the strongest","Because even a small friend can help, and he is grateful","Because he is a lion too","Because he is scared"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.1.2 — Determine the lesson of a story.",
+                  q:"What lesson does \"The Lion and the Mouse\" teach?", a:"No act of kindness is ever wasted — even the smallest friend can help you.",
+                  f:["How did kindness come back to help the Lion?","Why should we be kind to everyone?"],
+                  choices:["Big animals are best","No act of kindness is wasted","Mice are scary","Never help anyone"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.1.1 — Support an opinion with details.",
+                  q:"Would you rather be the hard-working Ant or the playful Grasshopper? Explain.", a:"Answers vary; the Ant plans ahead and stays safe, while the Grasshopper has fun but is unprepared for winter.",
+                  f:["Why is it smart to plan ahead?","Can you both work and have fun?"],
+                  choices:["There is no good answer","Answers vary — the Ant plans ahead; the Grasshopper is unprepared","Only the Grasshopper is right","Only the Ant is right"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.1.1 — Ask and answer questions about key details.",
+                  q:"In \"The Ant and the Grasshopper,\" what does the Ant do all summer?", a:"The Ant works hard to gather and store food.",
+                  f:["What does the Grasshopper do all summer?","Why is the Ant ready for winter?"],
+                  choices:["Sleeps all day","Works hard and stores food","Sings songs","Runs races"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.1.2 — Understand the message of a story.",
+                  q:"Why does the Grasshopper have no food when winter comes?", a:"Because he played all summer instead of preparing, so he did not save any food.",
+                  f:["What could the Grasshopper have done differently?","How does planning ahead help the Ant?"],
+                  choices:["He lost his food","He played all summer instead of preparing","Winter never came","The Ant took it"], correct:1 }
             ]},
             peter: { title: "The Tale of Peter Rabbit", author: "Beatrix Potter", band: "1-2", questions: [
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.2.1 — Ask and answer who, what, where, when, why, and how.",
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.2.1 — Ask and answer who, what, where, when, why, how.",
                   q:"Where does Peter's mother tell him NOT to go?", a:"Into Mr. McGregor's garden.",
                   f:["Why is the garden dangerous for Peter?","What happened to Peter's father there?"],
                   choices:["The deep forest","Mr. McGregor's garden","Down by the river","Into the barn"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.2.3 — Describe how characters respond to events.",
-                  q:"What does Peter do as soon as his mother leaves?", a:"He runs straight to Mr. McGregor's garden, disobeying her.",
-                  f:["Did Peter obey his mother?","What might happen because he disobeyed?"],
-                  choices:["He takes a nap","He goes to the garden anyway","He picks berries with his sisters","He hides at home"], correct:1 },
                 { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.2.3 — Describe how characters respond to challenges.",
                   q:"What kind of character is Peter?", a:"He is curious and disobedient — he does not listen to his mother.",
                   f:["How is Peter different from his sisters?","What gets Peter into trouble?"],
                   choices:["Obedient and careful","Curious and disobedient","Sleepy and calm","Shy and quiet"], correct:1 },
-                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.2.2 — Recount stories and determine their central message or lesson.",
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.2.2 — Determine the central message or lesson.",
                   q:"What is the main lesson of the story?", a:"Listening to your parents keeps you safe; disobeying can lead to trouble.",
                   f:["What trouble did Peter get into?","How did Peter feel at the end?"],
                   choices:["Gardens are fun places","Listening to your parents keeps you safe","Rabbits love carrots","Running is dangerous"], correct:1 },
                 { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.2.1 — Use details to support an answer.",
-                  q:"Do you think Peter learned his lesson? Use the story to explain.", a:"Answers vary; he got sick and lost his clothes, so he likely learned to be more careful next time.",
+                  q:"Do you think Peter learned his lesson? Use the story to explain.", a:"Answers vary; he got sick and lost his clothes, so he likely learned to be more careful.",
                   f:["What happened to Peter's jacket and shoes?","What would you tell Peter?"],
-                  choices:["He learned nothing at all","He probably learned to listen after getting into trouble","He was rewarded for disobeying","He never returned home"], correct:1 }
+                  choices:["He learned nothing","He probably learned to listen after getting into trouble","He was rewarded for disobeying","He never returned home"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.2.3 — Describe how characters respond to events.",
+                  q:"What does Peter do as soon as his mother leaves?", a:"He runs straight to Mr. McGregor's garden, disobeying her.",
+                  f:["Did Peter obey his mother?","What might happen because he disobeyed?"],
+                  choices:["He takes a nap","He goes to the garden anyway","He picks berries with his sisters","He hides at home"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.2.3 — Describe how characters respond to events.",
+                  q:"Why does Peter feel sick at the end of the day?", a:"He ate too much in the garden and was frightened, so his mother gives him medicine.",
+                  f:["What do his sisters get for supper instead?","How is Peter's evening different from theirs?"],
+                  choices:["He caught a cold","He ate too much and was scared in the garden","He ran too fast for fun","He was simply hungry"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.2.3 — Explain how a character's actions shape events.",
+                  q:"How do Peter's choices move the story along?", a:"Because Peter disobeys and enters the garden, the exciting chase and his troubles happen.",
+                  f:["What would happen if Peter had stayed home?","Do a character's choices shape a story?"],
+                  choices:["Peter does nothing","Peter's choice to disobey causes the chase and trouble","The garden causes everything by itself","Nothing happens at all"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.2.1 — Support an opinion with details.",
+                  q:"Was Peter's mother fair to give him only medicine while his sisters had a treat? Explain.", a:"Answers vary; it may seem like a gentle, fair consequence for disobeying.",
+                  f:["What was Peter's consequence?","How would you handle it if you were his mother?"],
+                  choices:["It was very unfair","Answers vary — it may be a fair, gentle consequence","She should have given him more treats","She was too mean"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.2.1 — Ask and answer questions about key details.",
+                  q:"Who chases Peter around the garden?", a:"Mr. McGregor.",
+                  f:["Why is Mr. McGregor angry?","What does Peter lose while running away?"],
+                  choices:["A dog","Mr. McGregor","His mother","A cat"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.2.2 — Understand the message of a story.",
+                  q:"What does the author show by having Peter lose his jacket and shoes?", a:"That disobeying can cost you something and lead to trouble.",
+                  f:["Where does Peter leave his clothes?","What does Mr. McGregor do with them?"],
+                  choices:["Clothes are unimportant","Disobeying can cost you something","Gardens have no fences","Rabbits cannot run"], correct:1 }
             ]},
             alice: { title: "Alice's Adventures in Wonderland", author: "Lewis Carroll", band: "3-4", questions: [
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.3.1 — Refer to details when explaining what a text says.",
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.3.1 — Refer to details when explaining a text.",
                   q:"Who does Alice follow down the rabbit hole?", a:"The White Rabbit.",
                   f:["What was unusual about the White Rabbit?","Why did Alice decide to follow him?"],
                   choices:["The Cheshire Cat","The White Rabbit","The Mad Hatter","The Queen of Hearts"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.3.3 — Describe characters and explain how their actions affect events.",
-                  q:"What happens to Alice when she drinks from the bottle labeled \"DRINK ME\"?", a:"She shrinks and becomes very small.",
-                  f:["What does the cake labeled 'EAT ME' do to her?","Why is changing size a problem for Alice?"],
-                  choices:["She grows taller","She shrinks and becomes very small","She falls asleep","She turns into a rabbit"], correct:1 },
                 { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.3.3 — Describe characters and their traits.",
                   q:"What does Alice's choice to follow the Rabbit show about her?", a:"She is very curious and adventurous.",
                   f:["Is being curious always safe?","How does curiosity lead Alice into strange situations?"],
@@ -192,86 +226,166 @@
                   q:"How is Wonderland different from the real world?", a:"In Wonderland the normal rules of logic and size do not apply — strange, impossible things happen.",
                   f:["Name one impossible thing that happens in Wonderland.","Why might the author create such a strange place?"],
                   choices:["It is exactly like the real world","Its normal rules of logic and size do not apply","It is an ordinary school","It has no characters at all"], correct:1 },
-                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.4.1 — Refer to details and examples to support inferences.",
-                  q:"Would you want to visit Wonderland? Support your opinion with details from the story.", a:"Answers vary; it is exciting and magical but also confusing and sometimes dangerous.",
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.4.1 — Refer to details to support inferences.",
+                  q:"Would you want to visit Wonderland? Support your opinion with details.", a:"Answers vary; it is exciting and magical but also confusing and sometimes dangerous.",
                   f:["What would be the best part of Wonderland?","What would be the scariest part?"],
-                  choices:["There is no way to answer","Answers vary, supported by details like its magic and its dangers","Only 'no' can be correct","Only 'yes' can be correct"], correct:1 }
+                  choices:["There is no way to answer","Answers vary, supported by its magic and its dangers","Only 'no' can be correct","Only 'yes' can be correct"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.3.3 — Describe how characters' actions affect events.",
+                  q:"What happens to Alice when she drinks from the bottle labeled \"DRINK ME\"?", a:"She shrinks and becomes very small.",
+                  f:["What does the cake labeled 'EAT ME' do to her?","Why is changing size a problem for Alice?"],
+                  choices:["She grows taller","She shrinks and becomes very small","She falls asleep","She turns into a rabbit"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.3.4 — Determine the meaning of words as used in a text.",
+                  q:"When the Cheshire Cat says everyone in Wonderland is \"mad,\" what does \"mad\" mean here?", a:"It means silly or crazy, not angry.",
+                  f:["How do the characters act 'mad'?","Give an example of a silly character."],
+                  choices:["Angry","Silly or crazy","Sad","Sleepy"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.4.3 — Describe a character and how actions affect the plot.",
+                  q:"How does Alice's changing size affect what she can do?", a:"Her size decides whether she can fit through doors and reach things, so it controls where she can go.",
+                  f:["When does being small help her? When does it hurt?","Why does the author keep changing her size?"],
+                  choices:["Size does not matter","Her size decides where she can go and reach","She is always the same","Size makes her invisible"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.4.3 — Support ideas about characters with details.",
+                  q:"Which Wonderland character would you most want to meet, and why?", a:"Answers vary; students should name a character and give a reason based on the story.",
+                  f:["What makes that character interesting?","What would you ask them?"],
+                  choices:["No character is interesting","Answers vary — name a character and give a reason","Only the Rabbit counts","Nobody can be chosen"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.3.1 — Refer to details in the text.",
+                  q:"What is the White Rabbit worried about being?", a:"Late — he keeps checking his pocket watch and hurrying.",
+                  f:["What does the Rabbit keep looking at?","Where is the Rabbit hurrying to?"],
+                  choices:["Hungry","Late for an appointment","Lost","Cold"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.3.3 — Describe characters' feelings and responses.",
+                  q:"Why does Alice cry a \"pool of tears\"?", a:"She is upset and confused by all the changes, and while very large she cries so much the tears form a pool.",
+                  f:["What happens when she shrinks near the pool?","How do her feelings change through the story?"],
+                  choices:["She is happy","She is upset and confused by the strange changes","She spilled water","It is raining"], correct:1 }
             ]},
             tomsawyer: { title: "The Adventures of Tom Sawyer", author: "Mark Twain", band: "5-6", questions: [
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.5.1 — Quote accurately when explaining the text and drawing inferences.",
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.5.1 — Quote accurately when explaining the text.",
                   q:"How does Tom avoid whitewashing the fence himself?", a:"He tricks other boys into thinking it is fun, so they pay him for the chance to do it.",
                   f:["What does Tom collect from the other boys?","What does this trick show about Tom?"],
                   choices:["He asks his aunt to do it","He tricks other boys into doing it for him","He runs away from home","He paints it very fast"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.5.3 — Compare and contrast characters.",
-                  q:"Who is Tom's close friend that lives freely, without rules?", a:"Huckleberry Finn.",
-                  f:["Why do the other boys envy Huck?","How are Tom and Huck alike and different?"],
-                  choices:["Becky Thatcher","Huckleberry Finn","Aunt Polly","His brother Sid"], correct:1 },
-                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.5.2 — Determine a theme from details in the text.",
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.5.2 — Determine a theme from details.",
                   q:"What does the fence trick reveal about people?", a:"People often want what seems hard to get; making a chore look like a privilege makes others want it.",
-                  f:["Have you ever wanted something more because it seemed special?","How does Tom use this idea to his advantage?"],
-                  choices:["People love doing chores","People want what seems hard to get or special","People never share anything","People hate all games"], correct:1 },
+                  f:["Have you ever wanted something more because it seemed special?","How does Tom use this idea?"],
+                  choices:["People love doing chores","People want what seems hard to get or special","People never share","People hate all games"], correct:1 },
                 { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.6.2 — Determine a theme and how it develops.",
-                  q:"What is one theme of Tom Sawyer?", a:"Growing up means balancing mischief with moral choices — Tom must decide between fun and doing what is right.",
+                  q:"What is one theme of Tom Sawyer?", a:"Growing up means balancing mischief with moral choices — Tom must choose between fun and doing right.",
                   f:["Give an example of Tom doing something right.","How does Tom change during the story?"],
                   choices:["Painting fences is hard work","Growing up means balancing mischief with doing what is right","Rivers are always dangerous","Friends do not matter"], correct:1 },
                 { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.6.6 — Explain how an author develops a point of view.",
                   q:"Is Tom a good role model? Use evidence from the story to explain.", a:"Answers vary; he is clever and brave but also dishonest and mischievous.",
                   f:["What is one admirable thing Tom does?","What is one thing you would not copy?"],
-                  choices:["He is a perfect role model","Answers vary — he is clever and brave but also mischievous","He is only ever bad","He does nothing important"], correct:1 }
+                  choices:["He is a perfect role model","Answers vary — clever and brave but also mischievous","He is only ever bad","He does nothing important"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.5.3 — Compare and contrast characters.",
+                  q:"Who is Tom's close friend that lives freely, without rules?", a:"Huckleberry Finn.",
+                  f:["Why do the other boys envy Huck?","How are Tom and Huck alike and different?"],
+                  choices:["Becky Thatcher","Huckleberry Finn","Aunt Polly","His brother Sid"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.5.3 — Explain how characters respond to challenges.",
+                  q:"Why does Tom eventually testify at the trial?", a:"His conscience and sense of justice push him to tell the truth and save an innocent man.",
+                  f:["What risk does Tom take by testifying?","How does this show Tom growing up?"],
+                  choices:["He wants a reward","His conscience pushes him to save an innocent man","He is forced by his aunt","He only wants attention"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.6.3 — Describe how the setting shapes the plot.",
+                  q:"How does the setting of a small river town shape the story?", a:"The town, cave, river, and island give Tom places for adventure, mischief, and danger.",
+                  f:["Name two places where important events happen.","How would the story change in a big city?"],
+                  choices:["Setting does not matter","The town and river give Tom places for adventure and danger","The story is set in a city","There is no real setting"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.6.6 — Analyze how a character develops.",
+                  q:"Does Tom change from the beginning to the end of the story? Use evidence.", a:"Answers vary; he grows braver and more responsible, though he keeps his playful spirit.",
+                  f:["What is one brave thing Tom does?","What playful trait does he keep?"],
+                  choices:["He never changes","Answers vary — he grows braver and more responsible","He becomes a villain","He disappears"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.5.1 — Explain what the text says explicitly.",
+                  q:"What frightening event do Tom and Huck witness in the graveyard?", a:"They see Injun Joe commit a murder.",
+                  f:["Why are the boys afraid to tell?","How does this secret affect Tom?"],
+                  choices:["A ghost appears","They witness Injun Joe commit a murder","They find buried gold","They see a big storm"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.5.2 — Determine a theme from details.",
+                  q:"Who does Tom fall in love with at school, and what does this show about him?", a:"Becky Thatcher; it shows Tom is starting to grow up and care about others, not just adventures.",
+                  f:["How does Tom try to impress her?","What happens when they get lost together in the cave?"],
+                  choices:["Aunt Polly; he is still a baby","Becky Thatcher; he is starting to grow up","No one; he only likes games","Huck; they are best friends"], correct:1 }
             ]},
             sherlock: { title: "The Adventures of Sherlock Holmes", author: "Arthur Conan Doyle", band: "7-8", questions: [
                 { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.7.1 — Cite textual evidence to support analysis.",
                   q:"What is Sherlock Holmes's profession?", a:"He is a detective who solves mysteries.",
                   f:["Who assists Holmes and narrates his cases?","What tools and skills does Holmes rely on?"],
                   choices:["A doctor","A detective","A lawyer","A schoolteacher"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.7.3 — Analyze how elements of a story interact.",
-                  q:"How does Holmes usually solve his cases?", a:"By carefully observing small details and using logical deduction.",
-                  f:["What kind of small clue might Holmes notice that others miss?","Why is Dr. Watson often amazed?"],
-                  choices:["By guessing at random","By observing details and using logical deduction","By asking the police for answers","By pure luck"], correct:1 },
                 { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.7.3 — Analyze how characters' actions reveal ideas.",
                   q:"What does Holmes's method suggest about the value of observation?", a:"Careful observation of small details can reveal large truths that others overlook.",
                   f:["How can careful observation help you in everyday life?","Why do others miss what Holmes sees?"],
                   choices:["Details never matter","Small details can reveal big truths","Only the police can solve crimes","Guessing is the best method"], correct:1 },
-                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.8.2 — Determine a theme and analyze its development, including the plot.",
-                  q:"How does Doyle build suspense in the Holmes stories?", a:"By presenting a puzzling mystery, withholding the solution, and revealing clues gradually through Watson's narration.",
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.8.2 — Analyze a theme's development, including the plot.",
+                  q:"How does Doyle build suspense in the Holmes stories?", a:"By presenting a puzzling mystery, withholding the solution, and revealing clues gradually through Watson.",
                   f:["Why tell the stories through Watson instead of Holmes?","How does revealing clues gradually keep readers interested?"],
                   choices:["By explaining everything immediately","By presenting a puzzle and revealing clues gradually","By avoiding any mystery","By using no clues at all"], correct:1 },
                 { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.8.6 — Analyze differing points of view.",
                   q:"Are Holmes's methods always ethical? Justify your view with reasons.", a:"Answers vary; his logic is impressive, but he sometimes uses deception or bends the rules.",
                   f:["When might deception be justified in solving a crime?","Should a detective always follow every rule?"],
-                  choices:["They are always wrong","Answers vary — impressive logic, but sometimes deceptive","They are never effective","He follows every rule perfectly"], correct:1 }
+                  choices:["They are always wrong","Answers vary — impressive logic, but sometimes deceptive","They are never effective","He follows every rule perfectly"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.7.3 — Analyze how story elements interact.",
+                  q:"How does Holmes usually solve his cases?", a:"By carefully observing small details and using logical deduction.",
+                  f:["What small clue might Holmes notice that others miss?","Why is Dr. Watson often amazed?"],
+                  choices:["By guessing at random","By observing details and using logical deduction","By asking the police for answers","By pure luck"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.7.2 — Analyze the development of a theme.",
+                  q:"What does Watson's amazement at Holmes reveal about Holmes's abilities?", a:"It shows that Holmes's powers of deduction are far beyond those of an ordinary, intelligent person.",
+                  f:["Why does Doyle use a 'normal' narrator?","How do we see Holmes through Watson's eyes?"],
+                  choices:["Holmes is only average","Holmes's deduction is far beyond ordinary","Watson is foolish","Holmes cannot solve cases"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.8.3 — Analyze how story structure creates effect.",
+                  q:"How does the structure of a typical Holmes story create interest?", a:"A puzzling problem is introduced, Holmes gathers clues, and the surprising solution is explained at the end.",
+                  f:["Why save the explanation for the end?","How does this keep readers guessing?"],
+                  choices:["Nothing is ever explained","A puzzle is set up, clues gathered, and the solution revealed at the end","The ending comes first","There is no structure"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.8.6 — Analyze how point of view shapes a text.",
+                  q:"Is Holmes a hero, even though he can be cold and arrogant? Defend your view.", a:"Answers vary; he serves justice and protects people, but his manner can be harsh — students weigh both.",
+                  f:["What good does Holmes do?","What is one flaw in his character?"],
+                  choices:["He is only a villain","Answers vary — he serves justice but can be harsh","He never helps anyone","He is perfect"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.7.1 — Cite evidence about the text.",
+                  q:"Who narrates most of the Sherlock Holmes stories?", a:"Dr. John Watson, Holmes's friend and companion.",
+                  f:["Why might Doyle choose Watson as narrator?","How does Watson feel about Holmes's skills?"],
+                  choices:["Sherlock Holmes himself","Dr. John Watson","Inspector Lestrade","The criminal"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.7.3 — Analyze how characters reveal theme.",
+                  q:"In \"A Scandal in Bohemia,\" Irene Adler outwits Holmes. What does this reveal?", a:"That Holmes is brilliant but not unbeatable, and he respects a truly clever opponent.",
+                  f:["Why does Holmes come to respect her?","What does losing teach Holmes?"],
+                  choices:["Holmes is never wrong","Holmes is brilliant but not unbeatable","Holmes gives up detective work","Irene is unimportant"], correct:1 }
             ]},
             carol: { title: "A Christmas Carol", author: "Charles Dickens", band: "8-9", questions: [
                 { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.8.1 — Cite textual evidence that supports analysis.",
                   q:"Who visits Scrooge first on Christmas Eve?", a:"The ghost of his old business partner, Jacob Marley.",
                   f:["What warning does Marley give Scrooge?","Why is Marley's ghost bound in heavy chains?"],
                   choices:["The Ghost of Christmas Past","Jacob Marley's ghost","Bob Cratchit","Tiny Tim"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.8.3 — Analyze how dialogue and events propel the action.",
-                  q:"How many spirits visit Scrooge after Marley?", a:"Three — the Ghosts of Christmas Past, Present, and Yet to Come.",
-                  f:["What does each ghost show Scrooge?","Which visit seems to affect Scrooge the most?"],
-                  choices:["One","Two","Three","Five"], correct:2 },
                 { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.9-10.2 — Determine a theme and analyze its development.",
                   q:"Why does Dickens have the ghosts show Scrooge scenes from different times?", a:"To make Scrooge see the consequences of his choices and inspire him to change.",
                   f:["How does seeing his past affect Scrooge?","What future does the last ghost reveal?"],
                   choices:["To confuse and frighten him only","To help him see the consequences of his choices and change","Just to entertain him","To punish Tiny Tim"], correct:1 },
-                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.9-10.2 — Analyze how a theme develops over the text.",
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.9-10.2 — Analyze how a theme develops.",
                   q:"What is the central theme of A Christmas Carol?", a:"People can change — generosity and compassion can redeem even a hardened heart.",
-                  f:["How is Scrooge different at the end of the story?","What causes his transformation?"],
+                  f:["How is Scrooge different at the end?","What causes his transformation?"],
                   choices:["Money is the only thing that matters","People can change through compassion and generosity","Christmas is just an ordinary day","Ghosts are real and everywhere"], correct:1 },
                 { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.9-10.6 — Analyze a point of view or purpose.",
-                  q:"Is Scrooge's transformation believable? Support your answer with evidence.", a:"Answers vary; the intense visions give him strong reasons to change, though some readers find the change sudden.",
+                  q:"Is Scrooge's transformation believable? Support your answer with evidence.", a:"Answers vary; the intense visions give him strong reasons to change, though some readers find it sudden.",
                   f:["What evidence shows Scrooge has truly changed?","Do people really change this way in real life?"],
-                  choices:["It is completely impossible","Answers vary — the visions give strong reasons, though some find it sudden","It never actually happens","He stays exactly the same"], correct:1 }
+                  choices:["It is completely impossible","Answers vary — strong reasons, though some find it sudden","It never actually happens","He stays exactly the same"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.8.3 — Analyze how events propel the action.",
+                  q:"How many spirits visit Scrooge after Marley?", a:"Three — the Ghosts of Christmas Past, Present, and Yet to Come.",
+                  f:["What does each ghost show Scrooge?","Which visit seems to affect Scrooge the most?"],
+                  choices:["One","Two","Three","Five"], correct:2 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.9-10.3 — Analyze how characters advance the plot.",
+                  q:"Why does the Ghost of Christmas Present show Scrooge the Cratchit family?", a:"To awaken his compassion by showing a poor but loving family, including the vulnerable Tiny Tim.",
+                  f:["How does the Cratchits' joy differ from Scrooge's wealth?","How does this change Scrooge?"],
+                  choices:["To make him laugh","To awaken his compassion for a poor, loving family","To scare him","To show off wealth"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.9-10.5 — Analyze how structure creates effect.",
+                  q:"How does Dickens use the three ghosts to structure Scrooge's change?", a:"Past, Present, and Future each reveal a stage that moves Scrooge from regret to fear to a resolve to change.",
+                  f:["What does each ghost contribute?","Why end with the future?"],
+                  choices:["The ghosts are random","Past, Present, and Future each move Scrooge closer to changing","There is no order","Only one ghost matters"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.9-10.6 — Analyze purpose and point of view.",
+                  q:"Does Scrooge deserve a second chance? Support your view.", a:"Answers vary; he caused harm but shows real remorse and changes his actions, which many feel earns redemption.",
+                  f:["What does Scrooge do to make amends?","Do actions matter more than words?"],
+                  choices:["He deserves nothing","Answers vary — he shows real remorse and changes his actions","He was never bad","He cannot change"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.8.1 — Cite evidence about characters.",
+                  q:"What is Scrooge like at the beginning of the story?", a:"Cold, greedy, and unkind — a miser who hates Christmas.",
+                  f:["How does he treat Bob Cratchit?","What does he say about Christmas?"],
+                  choices:["Warm and generous","Cold, greedy, and unkind","Poor and sad","Cheerful and giving"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.8.3 — Analyze how characters shape meaning.",
+                  q:"Who is Tiny Tim, and what does he represent in the story?", a:"Bob Cratchit's kind, sickly young son; he represents innocence and the human cost of Scrooge's coldness.",
+                  f:["Why does Scrooge worry about Tiny Tim later?","How does Tiny Tim affect Scrooge's heart?"],
+                  choices:["Scrooge's rich nephew","Bob Cratchit's sickly son, a symbol of innocence","A frightening ghost","Scrooge's business partner"], correct:1 }
             ]},
             frankenstein: { title: "Frankenstein", author: "Mary Shelley", band: "9-10", questions: [
                 { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.9-10.1 — Cite strong textual evidence.",
                   q:"Who creates the creature in the novel?", a:"Victor Frankenstein, a young scientist.",
                   f:["Why does Victor create the creature?","How does Victor react to what he has made?"],
                   choices:["The creature makes itself","Victor Frankenstein","Captain Walton","Elizabeth"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.9-10.3 — Analyze how characters develop and interact.",
-                  q:"How does Victor feel about the creature after bringing it to life?", a:"He is horrified and abandons it.",
-                  f:["What does the creature want from Victor?","How does being abandoned affect the creature?"],
-                  choices:["Proud and loving","Horrified, and he abandons it","Completely indifferent","Frightened but caring"], correct:1 },
                 { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.9-10.3 — Analyze how motivations advance the plot.",
                   q:"Why does the creature turn to violence?", a:"He is rejected and treated cruelly by everyone, so loneliness and anger drive him toward revenge.",
                   f:["Who rejects the creature?","Is the creature responsible, or is Victor — or both?"],
@@ -281,35 +395,78 @@
                   f:["What responsibility does Victor abandon?","How could the tragedy have been avoided?"],
                   choices:["The pure joy of science","The dangers of unchecked ambition and responsibility","The beauty of nature only","The importance of great wealth"], correct:1 },
                 { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.9-10.6 — Analyze point of view and purpose.",
-                  q:"Who is more to blame for the tragedy — Victor or the creature? Defend your view with evidence.", a:"Answers vary; strong responses weigh Victor's abandonment against the creature's own choices, using text evidence.",
+                  q:"Who is more to blame for the tragedy — Victor or the creature? Defend your view.", a:"Answers vary; strong responses weigh Victor's abandonment against the creature's own choices, using evidence.",
                   f:["What evidence supports blaming Victor?","What evidence supports blaming the creature?"],
-                  choices:["Only the creature is to blame","Answers vary — weigh Victor's abandonment against the creature's choices","Only Elizabeth is to blame","No one is responsible"], correct:1 }
+                  choices:["Only the creature is to blame","Answers vary — weigh Victor's abandonment against the creature's choices","Only Elizabeth is to blame","No one is responsible"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.9-10.3 — Analyze how characters develop and interact.",
+                  q:"How does Victor feel about the creature after bringing it to life?", a:"He is horrified and abandons it.",
+                  f:["What does the creature want from Victor?","How does being abandoned affect the creature?"],
+                  choices:["Proud and loving","Horrified, and he abandons it","Completely indifferent","Frightened but caring"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.9-10.2 — Analyze the development of central ideas.",
+                  q:"What does the creature's love of reading and language suggest about him?", a:"That he is intelligent and capable of deep feeling, not a mindless monster.",
+                  f:["What books does the creature read?","How does this change how we see him?"],
+                  choices:["He is mindless","He is intelligent and capable of feeling","He cannot learn","He hates books"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.9-10.5 — Analyze how structure and point of view create effect.",
+                  q:"How does telling the story from multiple points of view affect the reader?", a:"Hearing Walton, Victor, and the creature builds sympathy and shows there is no single, simple villain.",
+                  f:["Whose point of view surprised you?","How does the creature's view change your opinion?"],
+                  choices:["It is confusing and pointless","Multiple viewpoints build sympathy and complicate blame","Only Victor's view matters","It hides the plot"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.9-10.6 — Analyze author's purpose.",
+                  q:"Should Victor have made the creature a companion? Argue your position.", a:"Answers vary; a companion might have brought peace, but Victor feared creating more danger — students weigh both.",
+                  f:["What good might a companion have done?","What danger did Victor fear?"],
+                  choices:["There is nothing to argue","Answers vary — weigh possible peace against possible danger","Victor was always right","The creature was always right"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.9-10.1 — Cite evidence about structure.",
+                  q:"Who tells the outer story, framing the novel through letters?", a:"Captain Walton, an Arctic explorer who meets Victor.",
+                  f:["Why use a frame narrator?","Where does Walton meet Victor?"],
+                  choices:["The creature narrates all of it","Captain Walton frames the story through letters","Elizabeth narrates it","There is no narrator"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.9-10.3 — Analyze how motivation advances the plot.",
+                  q:"What does the creature ask Victor to make, and why?", a:"A female companion like himself, because he is desperately lonely and wants someone to accept him.",
+                  f:["How does Victor respond to the request?","Why is loneliness so central to the creature?"],
+                  choices:["A weapon, for revenge","A companion, because he is lonely","A house, for shelter","Money, to travel"], correct:1 }
             ]},
             pride: { title: "Pride and Prejudice", author: "Jane Austen", band: "11-12", questions: [
                 { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.11-12.1 — Cite strong and thorough textual evidence.",
                   q:"What is Mrs. Bennet's main goal for her daughters?", a:"To get them married to wealthy men.",
                   f:["Why is marriage so important for the Bennet daughters?","How does this goal drive the plot?"],
-                  choices:["To send them to university","To get them married well","To move them all to London","To make them go to work"], correct:1 },
-                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.11-12.3 — Analyze how characters develop over the course of a text.",
-                  q:"What is Elizabeth Bennet's first impression of Mr. Darcy?", a:"She finds him proud, arrogant, and unpleasant.",
-                  f:["What causes her first impression of him?","How does her opinion change over the novel?"],
-                  choices:["Charming and kind","Proud and unpleasant","Shy and sweet","Foolish and silly"], correct:1 },
+                  choices:["To send them to university","To get them married well","To move them to London","To make them go to work"], correct:1 },
                 { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.11-12.3 — Analyze the impact of the author's choices.",
                   q:"What do the words in the title, \"Pride and Prejudice,\" refer to?", a:"Darcy's pride and Elizabeth's prejudice, which both must overcome to understand each other.",
                   f:["How does Darcy show pride?","How does Elizabeth show prejudice?"],
                   choices:["The changing weather","Darcy's pride and Elizabeth's prejudice","A famous dance","The name of a town"], correct:1 },
-                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.11-12.2 — Determine two or more themes and analyze their development.",
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.11-12.2 — Determine themes and analyze their development.",
                   q:"What is a central theme of Pride and Prejudice?", a:"First impressions can be misleading; true understanding requires looking past pride and prejudice.",
-                  f:["How do Elizabeth and Darcy each grow and change?","How does Austen gently criticize the society of her time?"],
-                  choices:["Money guarantees happiness","First impressions can mislead; real understanding requires looking deeper","Marriage is unimportant","Social class never matters at all"], correct:1 },
-                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.11-12.6 — Analyze a case in which meaning depends on point of view.",
+                  f:["How do Elizabeth and Darcy each grow?","How does Austen gently criticize her society?"],
+                  choices:["Money guarantees happiness","First impressions can mislead; real understanding requires looking deeper","Marriage is unimportant","Social class never matters"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.11-12.6 — Analyze meaning that depends on point of view.",
                   q:"Does Elizabeth make the right choices about marriage? Justify with evidence.", a:"Answers vary; she refuses convenient matches and marries for love and respect, which most readers admire.",
-                  f:["Why does Elizabeth reject Mr. Collins's proposal?","What finally changes her view of Darcy?"],
-                  choices:["She never makes a choice","Answers vary — she refuses convenience and marries for love and respect","She marries only for money","She chooses to stay single forever"], correct:1 }
+                  f:["Why does Elizabeth reject Mr. Collins?","What finally changes her view of Darcy?"],
+                  choices:["She never makes a choice","Answers vary — she refuses convenience and marries for love and respect","She marries only for money","She chooses to stay single forever"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.11-12.3 — Analyze how characters develop.",
+                  q:"What is Elizabeth Bennet's first impression of Mr. Darcy?", a:"She finds him proud, arrogant, and unpleasant.",
+                  f:["What causes her first impression?","How does her opinion change over the novel?"],
+                  choices:["Charming and kind","Proud and unpleasant","Shy and sweet","Foolish and silly"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.11-12.3 — Analyze how characters change.",
+                  q:"What does Elizabeth learn when she reads Darcy's letter?", a:"That her judgments were partly based on prejudice and misinformation, especially about Wickham.",
+                  f:["How does she feel after reading it?","How does this begin to change her?"],
+                  choices:["That Darcy is a liar","That her judgments were based on prejudice and misinformation","That Jane is wrong","Nothing new at all"], correct:1 },
+                { type:"Analytical", standard:"CCSS.ELA-LITERACY.RL.11-12.2 — Analyze how themes develop across a text.",
+                  q:"How does Austen use marriage to comment on her society?", a:"Different marriages — for love, money, or security — reveal the limited choices women had and what Austen values.",
+                  f:["Contrast Charlotte's marriage with Elizabeth's ideals.","What does Austen seem to value in a marriage?"],
+                  choices:["Marriage is just romance","Different marriages reveal women's limited choices and Austen's values","Marriage is unimportant","Everyone marries for love"], correct:1 },
+                { type:"Evaluative", standard:"CCSS.ELA-LITERACY.RL.11-12.6 — Analyze how point of view shapes meaning.",
+                  q:"Is Darcy a good match for Elizabeth by the end? Defend your view with evidence.", a:"Answers vary; he changes his manners and proves his character through actions, which most readers find makes him worthy.",
+                  f:["What actions prove Darcy's change?","How has Elizabeth changed too?"],
+                  choices:["He is never worthy","Answers vary — he changes and proves his character through actions","He stays exactly the same","Elizabeth settles for less"], correct:1 },
+                { type:"Literal", standard:"CCSS.ELA-LITERACY.RL.11-12.1 — Cite evidence about characters and events.",
+                  q:"Who is Mr. Bingley, and why does his arrival matter?", a:"A wealthy, friendly gentleman who rents a nearby estate; his arrival excites the neighborhood and draws Darcy into the story.",
+                  f:["Which Bennet sister does Bingley favor?","How does Bingley bring Darcy into the story?"],
+                  choices:["A poor farmer","A wealthy newcomer who could marry a Bennet daughter","A soldier only","Elizabeth's brother"], correct:1 },
+                { type:"Inferential", standard:"CCSS.ELA-LITERACY.RL.11-12.3 — Analyze character motivation.",
+                  q:"Why does Elizabeth reject Mr. Darcy's first proposal?", a:"She resents his pride and blames him for separating Jane and Bingley and for mistreating Wickham.",
+                  f:["What does Darcy's letter later reveal about Wickham?","How does this proposal change their relationship?"],
+                  choices:["She loves someone else only","She resents his pride and his interference","She wants to move away","She dislikes his money"], correct:1 }
             ]}
         };
 
-        // Build the dropdown, grouped by grade band.
         (function buildDropdown() {
             const sel = document.getElementById('bookSelect');
             BANDS.forEach(band => {
@@ -352,7 +509,7 @@
         function generate() {
             const key = document.getElementById('bookSelect').value;
             if (!key || !books[key]) return;
-            const num = parseInt(document.getElementById('numQuestions').value, 10) || 5;
+            const num = parseInt(document.getElementById('numQuestions').value, 10) || 10;
             const questions = books[key].questions.slice(0, num);
             displayQuestions(questions, books[key].title);
         }
@@ -384,12 +541,7 @@
                     html += '<div class="standard-label">Standard: ' + escapeHtml(item.standard) + '</div>';
                     html += '<div class="question-text">' + escapeHtml(item.q) + '</div>';
                     card.innerHTML = html;
-
-                    if (mode === 'mc') {
-                        card.appendChild(buildMc(item));
-                    } else {
-                        card.appendChild(buildOpen(item));
-                    }
+                    card.appendChild(mode === 'mc' ? buildMc(item) : buildOpen(item));
                     section.appendChild(card);
                 });
                 container.appendChild(section);
