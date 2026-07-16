@@ -605,6 +605,7 @@
             const grouped = {};
             questions.forEach(q => { (grouped[q.type] = grouped[q.type] || []).push(q); });
 
+            let n = 0;
             typeOrder.forEach(type => {
                 if (!grouped[type]) return;
                 const section = document.createElement('div');
@@ -617,7 +618,7 @@
                 grouped[type].forEach(item => {
                     const card = document.createElement('div');
                     card.className = 'question-card';
-                    const n = questions.indexOf(item) + 1;
+                    n += 1;
                     let html = '<div class="question-number">Question ' + n + '</div>';
                     html += '<div class="standard-label">Standard: ' + escapeHtml(item.standard) + '</div>';
                     html += '<div class="question-text">' + escapeHtml(item.q) + '</div>';
