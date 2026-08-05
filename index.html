@@ -27,7 +27,8 @@
 
         .mode-toggle { display: flex; gap: 10px; margin: 20px 0 10px; }
         .mode-btn { flex: 1; background: #f0f0f5; color: #555; border: 2px solid #e0e0e0; padding: 14px; border-radius: 10px; font-size: 15px; font-weight: 600; cursor: pointer; transition: all 0.2s; }
-        .mode-btn:hover { border-color: #c3c9ff; }
+        .mode-btn:hover { background: #e6e9ff; color: #3d3d6b; border-color: #667eea; }
+        .mode-btn.active:hover { background: #764ba2; color: white; border-color: #764ba2; }
         .mode-btn.active { background: #667eea; color: white; border-color: #667eea; }
 
         .settings { display: grid; grid-template-columns: 1fr; gap: 20px; margin-bottom: 20px; }
@@ -94,7 +95,7 @@
                 <span class="section-label">Step 2: Choose a question format</span>
                 <div class="mode-toggle">
                     <button class="mode-btn active" id="modeOpenBtn" onclick="setMode('open')">✍️ Open-Ended (with answer keys)</button>
-                    <button class="mode-btn" id="modeMcBtn" onclick="setMode('mc')">☑️ Multiple Choice Quiz</button>
+                    <button class="mode-btn" id="modeMcBtn" onclick="setMode('mc')"><svg width="17" height="17" viewBox="0 0 24 24" aria-hidden="true" style="vertical-align:-3px;margin-right:7px"><rect x="2" y="2" width="20" height="20" rx="5" fill="#22a45d"/><path d="M6.6 12.4l3.6 3.6 7.2-7.4" fill="none" stroke="#ffffff" stroke-width="2.6" stroke-linecap="round" stroke-linejoin="round"/></svg>Multiple Choice Quiz</button>
                 </div>
 
                 <div class="settings">
