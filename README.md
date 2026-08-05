@@ -24,9 +24,17 @@ question set.
 - No account, no API key — open the page and use it
 
 ## Roadmap
-An AI-powered version (built separately) connects live to Project Gutenberg's
-~70,000 free books and generates fresh questions from any book — or any pasted
-passage — using the Claude API and a small backend.
+
+**Phase one is what you see here.** Eight public-domain books, preloaded, so the
+tool runs in the browser with no login, no account, and no API key. Everything
+needed to try it is already on the page.
+
+**Phase two is the API.** A live connection to Project Gutenberg's roughly
+70,000 free books, so a teacher can pick any title, or paste any passage, and
+get a fresh question set generated at the same four levels of demand, with
+answer keys and an aligned standard on every item.
+
+The preloaded books are the demonstration. The library is the point.
 
 ## License
 MIT — see [LICENSE](LICENSE).
